@@ -53,4 +53,3 @@ def client():
     Base.metadata.drop_all(bind=engine)
     Base.metadata.create_all(bind=engine)
     return TestClient(app)
-
