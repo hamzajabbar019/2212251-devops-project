@@ -9,23 +9,8 @@ test:
 runs-on: ubuntu-latest
 
 ```
-services:
-  postgres:
-    image: postgres:16
-    env:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
-      POSTGRES_DB: students_db
-    ports:
-      - 5432:5432
-    options: >-
-      --health-cmd="pg_isready -U postgres"
-      --health-interval=10s
-      --health-timeout=5s
-      --health-retries=5
-
 env:
-  DATABASE_URL: postgresql://postgres:postgres@localhost:5432/students_db
+  DATABASE_URL: sqlite:///./test.db
 
 steps:
   - uses: actions/checkout@v4
@@ -38,11 +23,10 @@ steps:
     run: |
       python -m pip install --upgrade pip
       pip install -r requirements.txt
-      pip install flake8 pytest
 
   - name: Run Flake8
     run: flake8 app
 
   - name: Run Tests
-    run: pytest
+    run: pytest -v
 ```
