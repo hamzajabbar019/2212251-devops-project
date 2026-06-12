@@ -1,28 +1,48 @@
 name: CI
 
 on:
-  push:
-  pull_request:
+push:
+pull_request:
 
 jobs:
-  test:
+test:
+runs-on: ubuntu-latest
 
-    runs-on: ubuntu-latest
+```
+services:
+  postgres:
+    image: postgres:16
+    env:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: students_db
+    ports:
+      - 5432:5432
+    options: >-
+      --health-cmd="pg_isready -U postgres"
+      --health-interval=10s
+      --health-timeout=5s
+      --health-retries=5
 
-    steps:
+env:
+  DATABASE_URL: postgresql://postgres:postgres@localhost:5432/students_db
 
-      - uses: actions/checkout@v4
+steps:
+  - uses: actions/checkout@v4
 
-      - uses: actions/setup-python@v5
-        with:
-          python-version: "3.11"
+  - uses: actions/setup-python@v5
+    with:
+      python-version: "3.12"
 
-      - name: Install Dependencies
-        run: |
-          pip install -r requirements.txt
+  - name: Install dependencies
+    run: |
+      python -m pip install --upgrade pip
+      pip install -r requirements.txt
+      pip install flake8 pytest
 
-      - name: Run Flake8
-        run: flake8 app
+  - name: Run Flake8
+    run: flake8 .
 
-      - name: Run Pytest
-        run: pytest
+  - name: Run Tests
+    run: pytest
+```
